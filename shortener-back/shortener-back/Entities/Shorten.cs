@@ -11,4 +11,8 @@ public class Shorten
     [MaxLength(300)] public string UserId { get; set; } = String.Empty;
 
     public User? User { get; set; }
+
+    public long Clicks { get; set; }
+    
+    public DateTime? ExpiresAt { get; set; }
 }

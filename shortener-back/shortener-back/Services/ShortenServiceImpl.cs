@@ -43,5 +43,23 @@ public class ShortenServiceImpl(
     }
 
     public async Task<string?> GetUrl(string? code)
-        => code is null ? null : (await repository.GetById(code))?.Url;
+    {
+        if (code is null) return null;
+
+        Shorten? entry = await repository.GetById(code);
+        if (entry is null) return null;
+        
+        if (entry.ExpiresAt is not null && entry.ExpiresAt < DateTime.UtcNow)
+        {
+            await repository.Delete(entry);
+            await repository.Save();
+            return null;
+        }
+
+        entry.Clicks++;
+        await repository.Update(entry);
+        await repository.Save();
+
+        return entry.Url;
+    }
 }
