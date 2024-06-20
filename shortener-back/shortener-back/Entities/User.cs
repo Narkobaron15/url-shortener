@@ -1,6 +1,6 @@
 ﻿namespace shortener_back.Entities;
 
-public class User : IdentityUser<long>
+public class User : IdentityUser
 {
     public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
 

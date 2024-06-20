@@ -1,15 +1,14 @@
 ﻿namespace shortener_back.Entities;
 
-public record Shorten
+public class Shorten
 {
-    [Key]
-    public string Code { get; init; } = String.Empty;
+    [Key, MaxLength(20)] public string Code { get; set; } = String.Empty;
 
-    public string Url { get; init; } = String.Empty;
+    [MaxLength(1000)] public string Url { get; set; } = String.Empty;
 
-    public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    public long UserId { get; init; }
+    [MaxLength(300)] public string UserId { get; set; } = String.Empty;
 
-    public User User { get; init; } = default!;
+    public User? User { get; set; }
 }
