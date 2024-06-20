@@ -1,6 +1,4 @@
-﻿using shortener_back.Services;
-
-namespace shortener_back.Configurations;
+﻿namespace shortener_back.Configurations;
 
 public static class ServiceExtensions
 {
@@ -10,7 +8,13 @@ public static class ServiceExtensions
 
     public static IServiceCollection AddBusinessLogic(
         this IServiceCollection services
-    ) => services.AddScoped<IShortenService, ShortenServiceImpl>();
+    )
+    {
+        services.AddScoped<IShortenService, ShortenServiceImpl>();
+        // more services may be here
+
+        return services;
+    }
 
     public static IHostApplicationBuilder AddDbContext(
         this IHostApplicationBuilder builder
@@ -23,4 +27,17 @@ public static class ServiceExtensions
         );
         return builder;
     }
+
+    public static IServiceCollection AddIdentity(
+        this IServiceCollection services
+    )
+    {
+        services.AddIdentity<User, IdentityRole>(
+                options => options.SignIn.RequireConfirmedAccount = false
+            )
+            .AddEntityFrameworkStores<ShortenerDbContext>()
+            .AddDefaultTokenProviders();
+        return services;
+    }
+
 }
