@@ -13,8 +13,9 @@ public sealed class Repository<TEntity>(ShortenerDbContext context)
 
     public async Task<IEnumerable<TEntity>> GetRange(
         int pageNumber,
-        int pageSize
-    ) => await _dbSet
+        int pageSize,
+        Expression<Func<TEntity, bool>>? predicate
+    ) => await (predicate is null ? _dbSet : _dbSet.Where(predicate))
         .Skip((pageNumber - 1) * pageSize)
         .Take(pageSize)
         .ToListAsync();
