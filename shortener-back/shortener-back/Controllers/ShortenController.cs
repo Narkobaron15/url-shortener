@@ -1,33 +1,27 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿namespace shortener_back.Controllers;
 
-namespace shortener_back.Controllers;
-
-[ApiController, Route("")/*, Authorize*/]
+[ApiController, Route("")]
 public class ShortenController(
+    IShortenService urlService,
     IConfiguration configuration
 ) : ControllerBase
 {
-    [HttpPut]
+    [HttpPut("shorten")/*, Authorize*/]
     public async Task<IActionResult> Shorten([FromBody] string url)
     {
-        // call service and add to database
-        return Ok();
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> Get()
-    {
-        string mainPage = configuration["MainPage"]
-                          ?? String.Empty;
-        return RedirectPermanent(mainPage);
+        string code = await urlService.GetCode(url);
+        return Ok(configuration["ShortenPage"] + code);
     }
 
     [HttpGet("{code}")]
-    public async Task<IActionResult> Get(string code)
+    public async Task<IActionResult> Get(string? code)
     {
-        // call service and redirect
-        // string url = await urlService.Get(code);
-        string url = "https://www.google.com";
+        string? mainPage = configuration["MainPage"];
+
+        if (mainPage is null) 
+            throw new InvalidOperationException("MainPage is not set");
+        
+        string url = await urlService.GetUrl(code) ?? mainPage;
         return RedirectPermanent(url);
     }
 }

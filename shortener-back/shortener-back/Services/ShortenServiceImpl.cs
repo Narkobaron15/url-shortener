@@ -1,7 +1,8 @@
-﻿namespace shortener_back.Services.Implementations;
+﻿namespace shortener_back.Services;
 
-public class ShortenService(
+public class ShortenServiceImpl(
     IRepository<Shorten> repository,
+    UserManager<User> userManager,
     IMapper mapper
 ) : IShortenService
 {
@@ -34,13 +35,13 @@ public class ShortenService(
         {
             Code = code,
             Url = url,
-            UserId = 0
+            UserId = String.Empty
         });
         await repository.Save();
 
         return code;
     }
 
-    public async Task<Shorten?> GetInfoInternal(string code)
-        => await repository.GetById(code);
+    public async Task<string?> GetUrl(string? code)
+        => code is null ? null : (await repository.GetById(code))?.Url;
 }
