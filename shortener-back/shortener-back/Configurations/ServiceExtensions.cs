@@ -11,7 +11,8 @@ public static class ServiceExtensions
     )
     {
         services.AddScoped<IShortenService, ShortenServiceImpl>();
-        // more services may be here
+        services.AddScoped<ITokensRepository, TokensRepositoryImpl>();
+        services.AddScoped<IUserService, UserServiceImpl>();
 
         return services;
     }
