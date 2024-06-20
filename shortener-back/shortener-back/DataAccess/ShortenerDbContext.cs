@@ -1,6 +1,4 @@
-﻿using shortener_back.Entities;
-
-namespace shortener_back.DataAccess;
+﻿namespace shortener_back.DataAccess;
 
 // TODO: Add configs for records (as no tracking, etc.)
 
