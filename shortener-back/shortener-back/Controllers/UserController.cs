@@ -1,47 +1,77 @@
 ﻿namespace shortener_back.Controllers;
 
 [ApiController, Route("user")]
-public class UserController : ControllerBase
+public class UserController(
+    IUserService userService,
+    IShortenService shortenService
+) : ControllerBase
 {
     [HttpGet("info"), Authorize]
     public async Task<IActionResult> GetAccountInfo()
     {
-        // TODO: get user info from database and return
-        return Ok();
+        UserDto? user = await userService.GetInfo(User);
+        return user is null ? NotFound() : Ok(user);
     }
 
     [HttpGet("routes"), Authorize]
-    public async Task<IActionResult> GetRoutesInfo()
+    public async Task<IActionResult> GetRoutesInfo(
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10
+    )
     {
-        // TODO: get user routes info and return
-        return Ok();
+        if (pageNumber < 1 || pageSize < 1)
+            return BadRequest();
+
+        UserDto? user = await userService.GetInfo(User);
+
+        if (user is null)
+            return Unauthorized();
+
+        if (user.Shortens.Count == 0)
+            return NotFound();
+
+        return Ok(await shortenService.GetRange(pageNumber, pageSize, User));
     }
-    
+
     [HttpGet("route/{code}"), Authorize]
     public async Task<IActionResult> GetRouteInfo(string code)
     {
-        // TODO: get user route info and return
-        return Ok();
+        ShortenDto? route = await shortenService.GetInfo(code, User);
+        return route is null ? NotFound() : Ok(route);
     }
-    
+
     [HttpDelete("route/{code}"), Authorize]
     public async Task<IActionResult> DeleteRoute(string code)
     {
-        // TODO: delete user route
-        return Ok();
+        bool result = await shortenService.DeleteCode(code, User);
+        return result ? Ok() : BadRequest();
     }
 
-    // [HttpPost("login"), AllowAnonymous]
-    // public async Task<IActionResult> Login([FromBody] LoginDto dto)
-    // {
-    //     // TODO: login and return tokens
-    //     return Ok();
-    // }
+    [HttpPost("login"), AllowAnonymous]
+    public async Task<IActionResult> Login([FromBody] LoginDto dto)
+    {
+        TokensDto? tokens = await userService.Authenticate(
+            dto.Username,
+            dto.Password
+        );
+        return tokens is null ? BadRequest() : Ok(tokens);
+    }
+
+    [HttpPost("register"), AllowAnonymous]
+    public async Task<IActionResult> Register([FromBody] RegisterDto dto)
+    {
+        UserDto result = await userService.Register(
+            dto.Username,
+            dto.Email,
+            dto.Password
+        );
+        return Ok(result);
+    }
     
-    // [HttpPost("register"), AllowAnonymous]
-    // public async Task<IActionResult> Register([FromBody] RegisterDto dto)
-    // {
-    //     // TODO: register a new user and return tokens
-    //     return Ok();
-    // }
+    [HttpPost("refresh"), Authorize]
+    public async Task<IActionResult> Refresh([FromBody] TokensDto dto)
+    {
+        TokensDto? tokens = await userService.Refresh(dto.AccessToken, dto.RefreshToken);
+        return tokens is null ? BadRequest() : Ok(tokens);
+    }
 }

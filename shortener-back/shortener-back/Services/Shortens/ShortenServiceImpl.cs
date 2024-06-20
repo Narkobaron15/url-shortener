@@ -1,7 +1,7 @@
-﻿namespace shortener_back.Services.Shorten;
+﻿namespace shortener_back.Services.Shortens;
 
 public class ShortenServiceImpl(
-    IRepository<DataAccess.Entities.Shorten> repository,
+    IRepository<Shorten> repository,
     UserManager<User> userManager,
     IMapper mapper
 ) : IShortenService
@@ -28,7 +28,7 @@ public class ShortenServiceImpl(
         return code;
     }
 
-    private async Task<bool> IsExpiredAndDeleted(DataAccess.Entities.Shorten entry)
+    private async Task<bool> IsExpiredAndDeleted(Shorten entry)
     {
         if (entry.ExpiresAt is null || entry.ExpiresAt > DateTime.UtcNow)
             return false;
@@ -58,7 +58,7 @@ public class ShortenServiceImpl(
         User? user = await FindUser(uPrincipal);
         if (user is null) return false;
 
-        DataAccess.Entities.Shorten? entry = await repository.GetById(code);
+        Shorten? entry = await repository.GetById(code);
         return entry?.UserId == user.Id;
     }
 
@@ -72,7 +72,7 @@ public class ShortenServiceImpl(
 
         string code = await GetEnsuredRandString();
 
-        await repository.Insert(new DataAccess.Entities.Shorten
+        await repository.Insert(new Shorten
         {
             Code = code,
             Url = url,
@@ -83,11 +83,31 @@ public class ShortenServiceImpl(
         return code;
     }
 
+    public async Task<bool> DeleteCode(string code, ClaimsPrincipal? user)
+    {
+        if (await FindUser(user) is null)
+            return false;
+
+        Shorten? entry = await repository.GetById(code);
+        if (entry is null)
+            return false;
+
+        if (entry.UserId != String.Empty
+            && !await IsUserAdmin(user)
+            && !await IsUserOwner(user, code)
+           )
+            return false;
+
+        await repository.Delete(entry);
+        await repository.Save();
+        return true;
+    }
+
     public async Task<string?> GetUrl(string? code)
     {
         if (code is null) return null;
 
-        DataAccess.Entities.Shorten? entry = await repository.GetById(code);
+        Shorten? entry = await repository.GetById(code);
         if (entry is null) return null;
 
         if (await IsExpiredAndDeleted(entry))
@@ -100,14 +120,14 @@ public class ShortenServiceImpl(
         return entry.Url;
     }
 
-    public async Task<ShortenDto> GetInfo(string code, ClaimsPrincipal? user)
+    public async Task<ShortenDto?> GetInfo(string code, ClaimsPrincipal? user)
     {
         if (await FindUser(user) is null)
-            throw new ArgumentException("User is not found", nameof(user));
+            throw new UnauthorizedAccessException("User is not found");
 
-        DataAccess.Entities.Shorten? entry = await repository.GetById(code);
+        Shorten? entry = await repository.GetById(code);
         if (entry is null)
-            throw new ArgumentException("Shorten entry is not found", nameof(code));
+            return null;
 
         if (await IsExpiredAndDeleted(entry))
             throw new ArgumentException("Shorten entry is expired", nameof(code));
@@ -121,7 +141,7 @@ public class ShortenServiceImpl(
         return mapper.Map<ShortenDto>(entry);
     }
 
-    public async Task<IEnumerable<ShortenDto>> GetRange(
+    public async Task<IEnumerable<ShortenDto>?> GetRange(
         int pageNumber,
         int pageSize,
         ClaimsPrincipal? user
