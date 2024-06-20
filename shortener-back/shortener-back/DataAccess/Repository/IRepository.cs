@@ -1,4 +1,4 @@
-﻿namespace shortener_back.Repository;
+﻿namespace shortener_back.DataAccess.Repository;
 
 public interface IRepository<TEntity> where TEntity : class
 {

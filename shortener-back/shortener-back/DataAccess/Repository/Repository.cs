@@ -1,4 +1,4 @@
-﻿namespace shortener_back.Repository;
+﻿namespace shortener_back.DataAccess.Repository;
 
 public sealed class Repository<TEntity>(ShortenerDbContext context)
     : IRepository<TEntity> where TEntity : class

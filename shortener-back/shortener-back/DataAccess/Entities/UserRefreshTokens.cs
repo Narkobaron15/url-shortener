@@ -1,4 +1,4 @@
-﻿namespace shortener_back.Entities;
+﻿namespace shortener_back.DataAccess.Entities;
 
 public class UserRefreshTokens
 {

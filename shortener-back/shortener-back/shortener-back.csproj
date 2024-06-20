@@ -28,8 +28,4 @@
       </Content>
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="DataAccess\Repository\" />
-    </ItemGroup>
-
 </Project>
