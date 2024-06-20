@@ -1,6 +1,5 @@
 ﻿namespace shortener_back.Repository;
 
-
 public interface IRepository<TEntity> where TEntity : class
 {
     IQueryable<TEntity> GetAll();
@@ -9,7 +8,8 @@ public interface IRepository<TEntity> where TEntity : class
 
     Task<IEnumerable<TEntity>> GetRange(
         int pageNumber,
-        int pageSize
+        int pageSize,
+        Expression<Func<TEntity, bool>>? predicate
     );
 
     Task<TEntity?> GetById(object id);

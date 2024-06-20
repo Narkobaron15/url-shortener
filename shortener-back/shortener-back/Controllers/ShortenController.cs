@@ -6,10 +6,10 @@ public class ShortenController(
     IConfiguration configuration
 ) : ControllerBase
 {
-    [HttpPut("shorten")/*, Authorize*/]
+    [HttpPut("shorten"), Authorize]
     public async Task<IActionResult> Shorten([FromBody] string url)
     {
-        string code = await urlService.GetCode(url);
+        string code = await urlService.GetCode(url, User);
         return Ok(configuration["ShortenPage"] + code);
     }
 

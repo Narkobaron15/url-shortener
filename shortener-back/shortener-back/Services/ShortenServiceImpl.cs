@@ -7,7 +7,8 @@ public class ShortenServiceImpl(
 ) : IShortenService
 {
     private const int DefaultSize = 6;
-    private const string Chars 
+
+    private const string Chars
         = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
     private static string GetRandString()
@@ -27,10 +28,50 @@ public class ShortenServiceImpl(
         return code;
     }
 
-    public async Task<string> GetCode(string url)
+    private async Task<bool> IsExpiredAndDeleted(Shorten entry)
     {
+        if (entry.ExpiresAt is null || entry.ExpiresAt > DateTime.UtcNow)
+            return false;
+
+        await repository.Delete(entry);
+        await repository.Save();
+        return true;
+    }
+
+    private async Task<User?> FindUser(ClaimsPrincipal? uPrincipal)
+    {
+        if (uPrincipal is null) return null;
+        return await userManager.GetUserAsync(uPrincipal);
+    }
+
+    private async Task<bool> IsUserAdmin(ClaimsPrincipal? uPrincipal)
+    {
+        User? user = await FindUser(uPrincipal);
+        if (user is null) return false;
+
+        IList<string> roles = await userManager.GetRolesAsync(user);
+        return roles.Contains("Admin");
+    }
+
+    private async Task<bool> IsUserOwner(ClaimsPrincipal? uPrincipal, string code)
+    {
+        User? user = await FindUser(uPrincipal);
+        if (user is null) return false;
+
+        Shorten? entry = await repository.GetById(code);
+        return entry?.UserId == user.Id;
+    }
+
+    public async Task<string> GetCode(string url, ClaimsPrincipal? user)
+    {
+        if (String.IsNullOrWhiteSpace(url))
+            throw new ArgumentException("URL is empty", nameof(url));
+
+        if (await FindUser(user) is null)
+            throw new ArgumentException("User is not found", nameof(user));
+
         string code = await GetEnsuredRandString();
-        
+
         await repository.Insert(new Shorten
         {
             Code = code,
@@ -48,18 +89,53 @@ public class ShortenServiceImpl(
 
         Shorten? entry = await repository.GetById(code);
         if (entry is null) return null;
-        
-        if (entry.ExpiresAt is not null && entry.ExpiresAt < DateTime.UtcNow)
-        {
-            await repository.Delete(entry);
-            await repository.Save();
+
+        if (await IsExpiredAndDeleted(entry))
             return null;
-        }
 
         entry.Clicks++;
         await repository.Update(entry);
         await repository.Save();
 
         return entry.Url;
+    }
+
+    public async Task<ShortenDto> GetInfo(string code, ClaimsPrincipal? user)
+    {
+        if (await FindUser(user) is null)
+            throw new ArgumentException("User is not found", nameof(user));
+
+        Shorten? entry = await repository.GetById(code);
+        if (entry is null)
+            throw new ArgumentException("Shorten entry is not found", nameof(code));
+
+        if (await IsExpiredAndDeleted(entry))
+            throw new ArgumentException("Shorten entry is expired", nameof(code));
+
+        if (entry.UserId != String.Empty
+            && !await IsUserAdmin(user)
+            && !await IsUserOwner(user, code)
+           )
+            throw new UnauthorizedAccessException("This user doesn't owns this record");
+
+        return mapper.Map<ShortenDto>(entry);
+    }
+
+    public async Task<IEnumerable<ShortenDto>> GetRange(
+        int pageNumber,
+        int pageSize,
+        ClaimsPrincipal? user
+    )
+    {
+        User? u = await FindUser(user);
+        if (u is null)
+            throw new ArgumentException("User is not found", nameof(user));
+
+        var entries = await repository.GetRange(
+            pageNumber,
+            pageSize,
+            x => x.UserId == u.Id
+        );
+        return mapper.Map<IEnumerable<ShortenDto>>(entries);
     }
 }
