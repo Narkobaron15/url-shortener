@@ -50,4 +50,6 @@ app.UseCors(opts =>
         .AllowAnyOrigin()
 );
 
+await app.SeedDatabase();
+
 await app.RunAsync();
