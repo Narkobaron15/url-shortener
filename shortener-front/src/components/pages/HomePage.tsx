@@ -1,15 +1,15 @@
-import {Button, Card, TextInput} from "flowbite-react";
-import {useState} from "react";
-import './css/HomePage.css';
+import {Button, Card, TextInput} from "flowbite-react"
+import {useState} from "react"
+import './css/HomePage.css'
 
 export default function HomePage() {
-    const [url, setUrl] = useState('');
-    const [shortenedUrl, setShortenedUrl] = useState('');
+    const [url, setUrl] = useState('')
+    const [shortenedUrl, setShortenedUrl] = useState('')
 
     const handleShortenUrl = () => {
         // Placeholder for URL shortening logic
-        setShortenedUrl(`short.ly/${url.slice(-6)}`);
-    };
+        setShortenedUrl(`short.ly/${url.slice(-6)}`)
+    }
 
     return (
         <Card className="card">

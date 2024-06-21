@@ -1,4 +1,4 @@
-import {Navbar} from "flowbite-react";
+import {Navbar} from "flowbite-react"
 import './css/Header.css'
 
 export default function Header() {
@@ -22,9 +22,9 @@ export default function Header() {
                 <Navbar.Link href="/about">
                     About
                 </Navbar.Link>
-                <Navbar.Link href="/services">
-                    Services
-                </Navbar.Link>
+                {/*<Navbar.Link href="/services">*/}
+                {/*    Services*/}
+                {/*</Navbar.Link>*/}
                 <Navbar.Link href="/account">
                     Account
                 </Navbar.Link>
