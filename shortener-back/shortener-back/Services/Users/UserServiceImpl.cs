@@ -51,7 +51,10 @@ public class UserServiceImpl(
         };
         IdentityResult result = await userManager.CreateAsync(user, password);
         if (!result.Succeeded)
-            throw new InvalidOperationException("User creation failed");
+            throw new InvalidOperationException(
+                "User creation failed. Reason: " +
+                String.Join(", ", result.Errors.Select(x => x.Description[..^1]))
+            );
 
         await userManager.AddToRoleAsync(user, "User");
         return mapper.Map<UserDto>(user);
@@ -62,8 +65,8 @@ public class UserServiceImpl(
         if (user is null) return null;
 
         User? userEntity = await userManager.GetUserAsync(user);
-        return userEntity is null 
-            ? null 
+        return userEntity is null
+            ? null
             : mapper.Map<UserDto>(userEntity) with
             {
                 Shortens = await GetRoutes(userEntity)

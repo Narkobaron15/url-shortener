@@ -5,6 +5,8 @@ public class MapperConfigs : /*AutoMapper*/ Profile
     public MapperConfigs()
     {
         CreateMap<Shorten, ShortenDto>();
+        CreateMap<CreateShortenDto, Shorten>();
+        
         CreateMap<User, UserDto>()
             .ForMember(
                 x => x.Shortens,

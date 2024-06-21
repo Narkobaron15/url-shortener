@@ -4,9 +4,9 @@
 public class ShortenController(IShortenService urlService) : ControllerBase
 {
     [HttpPut("shorten"), Authorize]
-    public async Task<IActionResult> Shorten([FromBody] string url)
+    public async Task<IActionResult> Shorten([FromBody] CreateShortenDto dto)
     {
-        string shortenUrl = await urlService.GetShortenUrl(url, User);
+        string shortenUrl = await urlService.GetShortenUrl(dto, User);
         return Ok(shortenUrl);
     }
 

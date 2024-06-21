@@ -67,11 +67,11 @@ public class ShortenServiceImpl(
         return entry?.UserId == user.Id;
     }
 
-    public async Task<string> GetCode(string url, ClaimsPrincipal? user)
+    public async Task<string> GetCode(CreateShortenDto dto, ClaimsPrincipal? user)
     {
         // check if string is a valid URL
-        if (!Uri.TryCreate(url, UriKind.Absolute, out _))
-            throw new ArgumentException("URL is not valid", nameof(url));
+        if (!Uri.TryCreate(dto.Url, UriKind.Absolute, out _))
+            throw new ArgumentException("URL is not valid", nameof(dto));
 
         User? u = await FindUser(user);
         if (u is null)
@@ -79,20 +79,19 @@ public class ShortenServiceImpl(
 
         string code = await GetEnsuredRandString();
 
-        await repository.Insert(new Shorten
-        {
-            Code = code,
-            Url = url,
-            UserId = u.Id
-        });
+        Shorten shorten = mapper.Map<Shorten>(dto);
+        shorten.Code = code;
+        shorten.UserId = u.Id;
+        
+        await repository.Insert(shorten);
         await repository.Save();
 
         return code;
     }
 
-    public async Task<string> GetShortenUrl(string url, ClaimsPrincipal? user)
+    public async Task<string> GetShortenUrl(CreateShortenDto dto, ClaimsPrincipal? user)
     {
-        string? code = await GetCode(url, user),
+        string? code = await GetCode(dto, user),
             host = env.IsDevelopment()
                 ? configuration["ShortenerPage"]
                 : Environment.GetEnvironmentVariable("ShortenerPage");
