@@ -1,0 +1,19 @@
+.card h5 {
+    @apply text-2xl font-bold tracking-tight text-gray-900 dark:text-white;
+}
+
+.card {
+    @apply mt-6 w-96;
+}
+
+.card div {
+    @apply flex flex-col gap-4;
+}
+
+.card a {
+    @apply text-blue-500 dark:text-blue-400;
+}
+
+.card span {
+    @apply text-gray-700 dark:text-gray-300;
+}
