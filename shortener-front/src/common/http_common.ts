@@ -16,7 +16,6 @@ http_common.interceptors.request.use(
             originalRequest._retry = true
             try {
                 const url = `${APP_ENV.BASE_URL}/user/refresh`
-                console.log('Refreshing token at ' + url)
                 const {data} = await axios.post(
                     url,
                     {},

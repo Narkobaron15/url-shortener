@@ -20,12 +20,10 @@ export default function LoginPage() {
         {setSubmitting}: FormikHelpers<LoginModel>
     ) => {
         try {
-            const response = await http_common.post(
+            await http_common.post(
                 '/user/login',
                 values
-            )
-            console.log(response.data)
-
+            );
             localStorage.setItem('auth', "true")
             navigate('/')
         } catch (error) {

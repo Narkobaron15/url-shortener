@@ -1,4 +1,4 @@
-h1 {
+h1.headline {
     @apply text-2xl font-bold mb-4;
 }
 
@@ -6,10 +6,18 @@ tr {
     @apply bg-white dark:border-gray-700 dark:bg-gray-800;
 }
 
-td:nth-child(odd) {
+td {
     @apply whitespace-nowrap font-medium text-gray-900 dark:text-white
 }
 
-td:nth-child(even) {
+td.link {
     @apply text-blue-500 hover:underline;
+}
+
+button.delete-btn {
+    @apply text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900;
+}
+
+th {
+    @apply text-center;
 }

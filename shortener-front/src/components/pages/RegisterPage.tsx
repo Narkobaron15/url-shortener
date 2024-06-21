@@ -22,17 +22,15 @@ export default function RegisterPage() {
         {setSubmitting}: FormikHelpers<RegisterModel>
     ) => {
         try {
-            let response = await http_common.post(
+            await http_common.post(
                 '/user/register',
                 values
             )
-            console.log(response.data.message)
 
-            response = await http_common.post(
+            await http_common.post(
                 '/user/login',
                 values
             )
-            console.log(response.data.message)
 
             localStorage.setItem('auth', "true")
             navigate('/')
