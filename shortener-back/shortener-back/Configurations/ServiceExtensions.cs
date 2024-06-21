@@ -23,8 +23,9 @@ public static class ServiceExtensions
     )
     {
         builder.Services.AddDbContext<ShortenerDbContext>(
-            options => options.UseNpgsql(
-                builder.Configuration.GetConnectionString("DefaultConnection")
+            options => options.UseNpgsql(builder.Environment.IsDevelopment()
+                ? builder.Configuration.GetConnectionString("DefaultConnection")
+                : Environment.GetEnvironmentVariable("DefaultConnection")
             )
         );
         return builder;
