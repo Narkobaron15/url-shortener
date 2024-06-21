@@ -30,6 +30,7 @@ export default function RegisterPage() {
                 }
             )
             console.log(response.data.message)
+
             response = await http_common.post(
                 '/user/login',
                 values,
@@ -38,6 +39,8 @@ export default function RegisterPage() {
                 }
             )
             console.log(response.data.message)
+
+            localStorage.setItem('auth', "true")
             navigate('/')
         } catch (error) {
             console.error('Error registering', error)

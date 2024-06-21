@@ -2,7 +2,7 @@ import './css/LoginRegisterPage.css'
 import http_common from "../../common/http_common.ts"
 import {ErrorMessage, Field, Form, Formik, FormikHelpers} from "formik"
 import {loginValidationSchema} from "./schemas/Schemas.ts"
-import {HiOutlineMail, HiOutlineLockClosed} from "react-icons/hi"
+import {HiOutlineLockClosed, HiOutlineUser} from "react-icons/hi"
 import LoginModel from "../../models/LoginModel.ts"
 import {Link, useNavigate} from "react-router-dom"
 import {useState} from "react";
@@ -28,6 +28,8 @@ export default function LoginPage() {
                 }
             )
             console.log(response.data.message)
+
+            localStorage.setItem('auth', "true")
             navigate('/')
         } catch (error) {
             console.error('Error logging in', error)
@@ -45,15 +47,15 @@ export default function LoginPage() {
                 {({isSubmitting}) => (
                     <Form className="form">
                         <div className="mb-4">
-                            <label htmlFor="email">
-                                Email
+                            <label htmlFor="username">
+                                User name
                             </label>
                             <div className="relative">
                                 <Field
                                     type="text"
                                     name="username"
-                                    id="email"/>
-                                <HiOutlineMail className="icon"/>
+                                    id="username"/>
+                                <HiOutlineUser className="icon"/>
                             </div>
                             <ErrorMessage name="username" component="div" className="error"/>
                         </div>

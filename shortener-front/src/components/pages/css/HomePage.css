@@ -17,3 +17,7 @@
 .card span {
     @apply text-gray-700 dark:text-gray-300;
 }
+
+.error {
+    @apply text-red-500 text-xs italic;
+}

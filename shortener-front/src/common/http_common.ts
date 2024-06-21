@@ -29,6 +29,7 @@ http_common.interceptors.request.use(
                 // Handle logout if refresh token fails
                 console.error('Refresh token expired or invalid')
                 axios.defaults.headers.common.Authorization = ''
+                localStorage.removeItem('auth')
             }
         }
         return Promise.reject(error)
