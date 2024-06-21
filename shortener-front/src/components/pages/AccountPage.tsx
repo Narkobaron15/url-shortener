@@ -2,9 +2,9 @@ import {useNavigate} from "react-router-dom"
 import AccountModel from "../../models/AccountModel.ts"
 import http_common from "../../common/http_common.ts"
 import {useEffect, useState} from "react"
-import {Table} from "flowbite-react";
+import {Table} from "flowbite-react"
 import './css/AccountPage.css'
-import APP_ENV from "../../common/env.ts";
+import APP_ENV from "../../common/env.ts"
 
 export default function AccountPage() {
     const navigate = useNavigate()

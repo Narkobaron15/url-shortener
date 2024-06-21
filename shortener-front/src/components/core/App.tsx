@@ -6,7 +6,7 @@ import NotFoundPage from "../pages/NotFoundPage.tsx"
 import RegisterPage from "../pages/RegisterPage.tsx"
 import LoginPage from "../pages/LoginPage.tsx"
 import AboutPage from "../pages/AboutPage.tsx"
-import AccountPage from "../pages/AccountPage.tsx";
+import AccountPage from "../pages/AccountPage.tsx"
 
 function App() {
     return (

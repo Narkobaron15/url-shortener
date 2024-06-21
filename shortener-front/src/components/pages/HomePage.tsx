@@ -1,9 +1,9 @@
 import {Button, Card, TextInput} from "flowbite-react"
 import {useState} from "react"
 import './css/HomePage.css'
-import {useNavigate} from "react-router-dom";
-import http_common from "../../common/http_common.ts";
-import {HiClipboardCopy} from "react-icons/hi";
+import {useNavigate} from "react-router-dom"
+import http_common from "../../common/http_common.ts"
+import {HiClipboardCopy} from "react-icons/hi"
 
 export default function HomePage() {
     const [url, setUrl] = useState('')

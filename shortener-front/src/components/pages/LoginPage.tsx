@@ -5,7 +5,7 @@ import {loginValidationSchema} from "./schemas/Schemas.ts"
 import {HiOutlineLockClosed, HiOutlineUser} from "react-icons/hi"
 import LoginModel from "../../models/LoginModel.ts"
 import {Link, useNavigate} from "react-router-dom"
-import {useState} from "react";
+import {useState} from "react"
 
 const initialValues = {
     username: '',
@@ -23,7 +23,7 @@ export default function LoginPage() {
             await http_common.post(
                 '/user/login',
                 values
-            );
+            )
             localStorage.setItem('auth', "true")
             navigate('/')
         } catch (error) {

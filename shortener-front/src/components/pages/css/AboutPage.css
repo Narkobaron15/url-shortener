@@ -1,0 +1,23 @@
+.about {
+    @apply container mx-auto p-6 bg-white rounded-lg shadow-md mt-8;
+}
+
+.about h1 {
+    @apply text-4xl font-bold mb-4;
+}
+
+.about p {
+    @apply text-lg mb-4;
+}
+
+.about h2 {
+    @apply text-2xl font-semibold mb-3;
+}
+
+.about ul {
+    @apply list-disc list-inside text-lg mb-4;
+}
+
+.about a {
+    @apply text-blue-500 hover:text-blue-700;
+}

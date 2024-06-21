@@ -1,7 +1,7 @@
 import {Navbar} from "flowbite-react"
 import './css/Header.css'
-import http_common from "../../common/http_common.ts";
-import {useNavigate} from "react-router-dom";
+import http_common from "../../common/http_common.ts"
+import {useNavigate} from "react-router-dom"
 
 export default function Header() {
     const navigate = useNavigate()
@@ -23,10 +23,10 @@ export default function Header() {
                 <img
                     src="https://flowbite.com/docs/images/logo.svg"
                     className="mr-3 h-6 sm:h-9"
-                    alt="Flowbite Logo"
+                    alt="Shorty Logo"
                 />
                 <h1 className="styled">
-                    ShorterUrl
+                    Shorty
                 </h1>
             </Navbar.Brand>
             <Navbar.Toggle/>
