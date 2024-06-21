@@ -3,6 +3,8 @@
 public class ShortenServiceImpl(
     IRepository<Shorten> repository,
     UserManager<User> userManager,
+    IWebHostEnvironment env,
+    IConfiguration configuration,
     IMapper mapper
 ) : IShortenService
 {
@@ -53,7 +55,10 @@ public class ShortenServiceImpl(
         return roles.Contains("Admin");
     }
 
-    private async Task<bool> IsUserOwner(ClaimsPrincipal? uPrincipal, string code)
+    private async Task<bool> IsUserOwner(
+        ClaimsPrincipal? uPrincipal,
+        string code
+    )
     {
         User? user = await FindUser(uPrincipal);
         if (user is null) return false;
@@ -64,10 +69,12 @@ public class ShortenServiceImpl(
 
     public async Task<string> GetCode(string url, ClaimsPrincipal? user)
     {
-        if (String.IsNullOrWhiteSpace(url))
-            throw new ArgumentException("URL is empty", nameof(url));
+        // check if string is a valid URL
+        if (!Uri.TryCreate(url, UriKind.Absolute, out _))
+            throw new ArgumentException("URL is not valid", nameof(url));
 
-        if (await FindUser(user) is null)
+        User? u = await FindUser(user);
+        if (u is null)
             throw new ArgumentException("User is not found", nameof(user));
 
         string code = await GetEnsuredRandString();
@@ -76,11 +83,24 @@ public class ShortenServiceImpl(
         {
             Code = code,
             Url = url,
-            UserId = String.Empty
+            UserId = u.Id
         });
         await repository.Save();
 
         return code;
+    }
+
+    public async Task<string> GetShortenUrl(string url, ClaimsPrincipal? user)
+    {
+        string? code = await GetCode(url, user),
+            host = env.IsDevelopment()
+                ? configuration["ShortenerPage"]
+                : Environment.GetEnvironmentVariable("ShortenerPage");
+
+        if (host is null)
+            throw new InvalidOperationException("ShortenerPage is not set");
+
+        return $"{host}/{code}";
     }
 
     public async Task<bool> DeleteCode(string code, ClaimsPrincipal? user)
@@ -103,15 +123,22 @@ public class ShortenServiceImpl(
         return true;
     }
 
-    public async Task<string?> GetUrl(string? code)
+    public async Task<string> GetUrl(string? code)
     {
-        if (code is null) return null;
+        string? mainPage = env.IsDevelopment()
+            ? configuration["MainPage"]
+            : Environment.GetEnvironmentVariable("MainPage");
+
+        if (mainPage is null)
+            throw new InvalidOperationException("MainPage is not set");
+
+        if (code is null) return mainPage;
 
         Shorten? entry = await repository.GetById(code);
-        if (entry is null) return null;
+        if (entry is null) return mainPage;
 
         if (await IsExpiredAndDeleted(entry))
-            return null;
+            return mainPage;
 
         entry.Clicks++;
         await repository.Update(entry);
@@ -130,13 +157,18 @@ public class ShortenServiceImpl(
             return null;
 
         if (await IsExpiredAndDeleted(entry))
-            throw new ArgumentException("Shorten entry is expired", nameof(code));
+            throw new ArgumentException(
+                "Shorten entry is expired",
+                nameof(code)
+            );
 
         if (entry.UserId != String.Empty
             && !await IsUserAdmin(user)
             && !await IsUserOwner(user, code)
            )
-            throw new UnauthorizedAccessException("This user doesn't owns this record");
+            throw new UnauthorizedAccessException(
+                "This user doesn't owns this record"
+            );
 
         return mapper.Map<ShortenDto>(entry);
     }

@@ -52,6 +52,7 @@ public class UserServiceImpl(
         if (!result.Succeeded) 
             throw new InvalidOperationException("User creation failed");
 
+        await userManager.AddToRoleAsync(user, "User");
         return mapper.Map<UserDto>(user);
     }
 
