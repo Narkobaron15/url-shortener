@@ -5,6 +5,7 @@ import {ErrorMessage, Field, Form, Formik, FormikHelpers} from "formik"
 import {HiOutlineLockClosed, HiOutlineUser, HiOutlineMail} from "react-icons/hi"
 import {registerValidationSchema} from "./schemas/Schemas.ts"
 import {useNavigate} from "react-router-dom"
+import {useState} from "react";
 
 const initialValues = {
     username: '',
@@ -14,15 +15,28 @@ const initialValues = {
 
 export default function RegisterPage() {
     const navigate = useNavigate()
+    const [showPassword, setShowPassword] = useState<boolean>(false)
 
     const handleSubmit = async (
         values: RegisterModel,
-        { setSubmitting } : FormikHelpers<RegisterModel>
+        {setSubmitting}: FormikHelpers<RegisterModel>
     ) => {
         try {
-            let response = await http_common.post('/user/register', values)
+            let response = await http_common.post(
+                '/user/register',
+                values,
+                {
+                    withCredentials: false,
+                }
+            )
             console.log(response.data.message)
-            response = await http_common.post('/user/login', values)
+            response = await http_common.post(
+                '/user/login',
+                values,
+                {
+                    withCredentials: false,
+                }
+            )
             console.log(response.data.message)
             navigate('/')
         } catch (error) {
@@ -31,14 +45,14 @@ export default function RegisterPage() {
             setSubmitting(false)
         }
     }
-    
+
     return (
         <div className="wrapper">
             <h2>Register</h2>
             <Formik initialValues={initialValues}
                     validationSchema={registerValidationSchema}
                     onSubmit={handleSubmit}>
-                {({ isSubmitting }) => (
+                {({isSubmitting}) => (
                     <Form className="form">
                         <div className="mb-4">
                             <label htmlFor="username">
@@ -49,9 +63,9 @@ export default function RegisterPage() {
                                     type="text"
                                     name="username"
                                     id="username"/>
-                                <HiOutlineUser className="icon" />
+                                <HiOutlineUser className="icon"/>
                             </div>
-                            <ErrorMessage name="username" component="div" className="error" />
+                            <ErrorMessage name="username" component="div" className="error"/>
                         </div>
 
                         <div className="mb-4">
@@ -63,9 +77,9 @@ export default function RegisterPage() {
                                     type="email"
                                     name="email"
                                     id="email"/>
-                                <HiOutlineMail className="icon" />
+                                <HiOutlineMail className="icon"/>
                             </div>
-                            <ErrorMessage name="email" component="div" className="error" />
+                            <ErrorMessage name="email" component="div" className="error"/>
                         </div>
 
                         <div className="mb-6">
@@ -74,13 +88,15 @@ export default function RegisterPage() {
                             </label>
                             <div className="relative">
                                 <Field
-                                    type="password"
+                                    type={showPassword ? "text" : "password"}
                                     name="password"
                                     id="password"
                                     className="mb-3"/>
-                                <HiOutlineLockClosed className="icon" />
+                                <HiOutlineLockClosed
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="icon"/>
                             </div>
-                            <ErrorMessage name="password" component="div" className="error" />
+                            <ErrorMessage name="password" component="div" className="error"/>
                         </div>
 
                         <div className="flex items-center justify-between">
@@ -88,7 +104,7 @@ export default function RegisterPage() {
                                 type="submit"
                                 className="submit-btn"
                                 disabled={isSubmitting}>
-                                {isSubmitting ? 'Registering...' : 'Registered'}
+                                {isSubmitting ? 'Registering...' : 'Register'}
                             </button>
                         </div>
                     </Form>

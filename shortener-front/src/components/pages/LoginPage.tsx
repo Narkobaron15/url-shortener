@@ -1,24 +1,32 @@
 import './css/LoginRegisterPage.css'
 import http_common from "../../common/http_common.ts"
-import {ErrorMessage, Field, Form, Formik, FormikHelpers } from "formik"
+import {ErrorMessage, Field, Form, Formik, FormikHelpers} from "formik"
 import {loginValidationSchema} from "./schemas/Schemas.ts"
 import {HiOutlineMail, HiOutlineLockClosed} from "react-icons/hi"
 import LoginModel from "../../models/LoginModel.ts"
-import {useNavigate} from "react-router-dom"
+import {Link, useNavigate} from "react-router-dom"
+import {useState} from "react";
 
 const initialValues = {
-    email: '',
+    username: '',
     password: '',
 }
 export default function LoginPage() {
     const navigate = useNavigate()
+    const [showPassword, setShowPassword] = useState<boolean>(false)
 
     const handleSubmit = async (
         values: LoginModel,
-        { setSubmitting }: FormikHelpers<LoginModel>
+        {setSubmitting}: FormikHelpers<LoginModel>
     ) => {
         try {
-            const response = await http_common.post('/user/login', values)
+            const response = await http_common.post(
+                '/user/login',
+                values,
+                {
+                    withCredentials: false,
+                }
+            )
             console.log(response.data.message)
             navigate('/')
         } catch (error) {
@@ -34,7 +42,7 @@ export default function LoginPage() {
             <Formik initialValues={initialValues}
                     validationSchema={loginValidationSchema}
                     onSubmit={handleSubmit}>
-                {({ isSubmitting }) => (
+                {({isSubmitting}) => (
                     <Form className="form">
                         <div className="mb-4">
                             <label htmlFor="email">
@@ -42,12 +50,12 @@ export default function LoginPage() {
                             </label>
                             <div className="relative">
                                 <Field
-                                    type="email"
-                                    name="email"
+                                    type="text"
+                                    name="username"
                                     id="email"/>
-                                <HiOutlineMail className="icon" />
+                                <HiOutlineMail className="icon"/>
                             </div>
-                            <ErrorMessage name="email" component="div" className="error" />
+                            <ErrorMessage name="username" component="div" className="error"/>
                         </div>
 
                         <div className="mb-6">
@@ -56,13 +64,15 @@ export default function LoginPage() {
                             </label>
                             <div className="relative">
                                 <Field
-                                    type="password"
+                                    type={showPassword ? "text" : "password"}
                                     name="password"
                                     id="password"
                                     className="mb-3"/>
-                                <HiOutlineLockClosed className="icon" />
+                                <HiOutlineLockClosed
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="icon"/>
                             </div>
-                            <ErrorMessage name="password" component="div" className="error" />
+                            <ErrorMessage name="password" component="div" className="error"/>
                         </div>
 
                         <div className="flex items-center justify-between">
@@ -73,6 +83,10 @@ export default function LoginPage() {
                                 {isSubmitting ? 'Logging in...' : 'Login'}
                             </button>
                         </div>
+                        <p className="mt-2">
+                            Don't have an account?&nbsp;
+                            <Link to="/register" className="link">Register</Link>
+                        </p>
                     </Form>
                 )}
             </Formik>

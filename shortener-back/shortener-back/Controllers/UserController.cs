@@ -93,7 +93,7 @@ public class UserController(
         return Ok(result);
     }
 
-    [HttpPost("refresh"), Authorize]
+    [HttpPost("refresh"), AllowAnonymous]
     public async Task<IActionResult> Refresh([FromBody] TokensDto dto)
     {
         TokensDto? tokens = await userService.Refresh(

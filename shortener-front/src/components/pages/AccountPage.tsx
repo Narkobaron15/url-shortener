@@ -19,7 +19,7 @@ export default function AccountPage() {
                 console.error('Error getting account info', error)
                 navigate('/login')
             })
-    }, [])
+    })
 
     return account
         ? (
