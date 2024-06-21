@@ -27,7 +27,7 @@ export default function LoginPage() {
                     withCredentials: false,
                 }
             )
-            console.log(response.data.message)
+            console.log(response.data)
 
             localStorage.setItem('auth', "true")
             navigate('/')

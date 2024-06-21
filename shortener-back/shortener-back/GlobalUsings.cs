@@ -25,6 +25,7 @@ global using shortener_back.DataAccess;
 global using shortener_back.DataAccess.Entities;
 global using shortener_back.DataAccess.Repository;
 global using shortener_back.Dto;
+global using shortener_back.Middleware;
 global using shortener_back.Services.Security;
 global using shortener_back.Services.Shortens;
 global using shortener_back.Services.Users;

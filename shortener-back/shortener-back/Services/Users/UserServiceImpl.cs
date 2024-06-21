@@ -17,7 +17,7 @@ public class UserServiceImpl(
             throw new UnauthorizedAccessException(
                 "Invalid username or password"
             );
-
+        
         return await jwtTokenService.GenerateToken(user);
     }
 

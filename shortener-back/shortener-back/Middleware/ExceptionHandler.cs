@@ -1,4 +1,4 @@
-namespace shortener_back.Configurations;
+namespace shortener_back.Middleware;
 
 public class ExceptionHandler : IExceptionHandler
 {

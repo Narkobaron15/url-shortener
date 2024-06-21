@@ -5,7 +5,7 @@ import {ErrorMessage, Field, Form, Formik, FormikHelpers} from "formik"
 import {HiOutlineLockClosed, HiOutlineUser, HiOutlineMail} from "react-icons/hi"
 import {registerValidationSchema} from "./schemas/Schemas.ts"
 import {useNavigate} from "react-router-dom"
-import {useState} from "react";
+import {useState} from "react"
 
 const initialValues = {
     username: '',

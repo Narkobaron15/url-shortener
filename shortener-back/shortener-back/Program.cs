@@ -39,12 +39,25 @@ app.UseHsts();
 
 app.UseHttpsRedirection();
 
+string? origin = builder.Environment.IsDevelopment()
+    ? builder.Configuration["MainPage"]
+    : Environment.GetEnvironmentVariable("MainPage");
+if (origin is null)
+    throw new ApplicationException("MainPage is not set");
+
+Console.WriteLine($"MainPage: {origin}");
+
+app.UseCors(opts =>
+    opts.WithOrigins(origin)
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials()
+);
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.ConfigureCors(builder);
 
 await app.SeedDatabase();
 

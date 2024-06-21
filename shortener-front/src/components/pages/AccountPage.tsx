@@ -2,6 +2,8 @@ import {useNavigate} from "react-router-dom"
 import AccountModel from "../../models/AccountModel.ts"
 import http_common from "../../common/http_common.ts"
 import {useEffect, useState} from "react"
+import {Table} from "flowbite-react";
+import './css/AccountPage.css'
 
 export default function AccountPage() {
     const navigate = useNavigate()
@@ -19,12 +21,43 @@ export default function AccountPage() {
                 console.error('Error getting account info', error)
                 navigate('/login')
             })
-    })
+    }, [])
 
     return account
         ? (
-            <>
+            <div className="p-4">
                 <h1>{account.username}'s account Page</h1>
-            </>
-        ) : (<></>) // TODO: add a loading spinner
+                <div className="mb-4">
+                    <p><strong>Username:</strong> {account.username}</p>
+                    <p><strong>Email:</strong> {account.email}</p>
+                    <p><strong>Created At:</strong> {account.createdAt.toDateString()}</p>
+                </div>
+
+                <h2 className="text-xl font-bold mb-4">Shortened URLs</h2>
+                <Table striped={true}>
+                    <Table.Head>
+                        <Table.HeadCell>Original URL</Table.HeadCell>
+                        <Table.HeadCell>Shortened URL</Table.HeadCell>
+                        <Table.HeadCell>Created At</Table.HeadCell>
+                    </Table.Head>
+                    <Table.Body className="divide-y">
+                        {account.shortens.map((shorten, index) => (
+                            <Table.Row key={index}>
+                                <Table.Cell>
+                                    {shorten.url}
+                                </Table.Cell>
+                                <Table.Cell>
+                                    <a href={shorten.code}
+                                       target="_blank" rel="noopener noreferrer">
+                                        {shorten.code}
+                                    </a>
+                                </Table.Cell>
+                                <Table.Cell>{new Date(shorten.createdAt).toDateString()}</Table.Cell>
+                            </Table.Row>
+                        ))}
+                    </Table.Body>
+                </Table>
+            </div>
+        ) :
+        (<></>) // TODO: add a loading spinner
 }

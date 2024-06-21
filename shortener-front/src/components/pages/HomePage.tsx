@@ -3,11 +3,13 @@ import {useState} from "react"
 import './css/HomePage.css'
 import {useNavigate} from "react-router-dom";
 import http_common from "../../common/http_common.ts";
+import {HiClipboardCopy} from "react-icons/hi";
 
 export default function HomePage() {
     const [url, setUrl] = useState('')
     const [shortenedUrl, setShortenedUrl] = useState('')
     const [error, setError] = useState<string | null>(null)
+    const [recentCopied, setRecentCopied] = useState<boolean>(false)
 
     const navigate = useNavigate()
 
@@ -38,6 +40,14 @@ export default function HomePage() {
             })
     }
 
+    const handleCopyClick = async () => {
+        await navigator.clipboard.writeText(shortenedUrl)
+        setRecentCopied(true)
+        setTimeout(() => {
+            setRecentCopied(false)
+        }, 3000)
+    }
+
     return (
         <Card className="card">
             <h5>
@@ -53,13 +63,17 @@ export default function HomePage() {
                 <Button onClick={handleShortenUrl}>Shorten URL</Button>
                 {error && <div className="error">{error}</div>}
                 {shortenedUrl && (
-                    <div className="mt-4">
+                    <div className="mt-4 relative">
                         <span>Shortened URL:</span>
                         <a href={shortenedUrl} target="_blank" rel="noopener noreferrer">
                             {shortenedUrl}
                         </a>
+                        <HiClipboardCopy
+                            className="icon"
+                            onClick={handleCopyClick}/>
                     </div>
                 )}
+                {recentCopied && <div className="success">Copied to clipboard</div>}
             </div>
         </Card>
     )

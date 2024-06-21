@@ -102,4 +102,13 @@ public class UserController(
         );
         return ProcessTokens(tokens);
     }
+    
+    [HttpPost("logout"), Authorize]
+    public async Task<IActionResult> Logout()
+    {
+        Response.Cookies.Delete("jwt", _options);
+        Response.Cookies.Delete("refresh", _options);
+        
+        return Ok();
+    }
 }
