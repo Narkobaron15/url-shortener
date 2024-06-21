@@ -81,7 +81,7 @@ public static class ServiceExtensions
         // auth configs
         byte[] keyBytes = Encoding.UTF8.GetBytes(configuration["JwtSecretKey"]!);
         SymmetricSecurityKey signingKey = new(keyBytes);
-        
+
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -100,12 +100,15 @@ public static class ServiceExtensions
                 ValidIssuer = configuration["JwtIssuer"],
                 ClockSkew = TimeSpan.Zero
             };
-            cfg.Events = new JwtBearerEvents {
-                OnAuthenticationFailed = context => {
+            cfg.Events = new JwtBearerEvents
+            {
+                OnAuthenticationFailed = context =>
+                {
                     if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
                     {
                         context.Response.Headers["IS-TOKEN-EXPIRED"] = "true";
                     }
+
                     return Task.CompletedTask;
                 },
                 OnMessageReceived = context =>
@@ -114,6 +117,12 @@ public static class ServiceExtensions
                     return Task.CompletedTask;
                 }
             };
+        }).AddCookie(opts =>
+        {
+            opts.Cookie.Name = "jwt";
+            opts.Cookie.SameSite = SameSiteMode.None;
+            opts.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            opts.Cookie.HttpOnly = true;
         });
 
         return services;

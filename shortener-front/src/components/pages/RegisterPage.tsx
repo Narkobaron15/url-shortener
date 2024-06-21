@@ -24,19 +24,13 @@ export default function RegisterPage() {
         try {
             let response = await http_common.post(
                 '/user/register',
-                values,
-                {
-                    withCredentials: false,
-                }
+                values
             )
             console.log(response.data.message)
 
             response = await http_common.post(
                 '/user/login',
-                values,
-                {
-                    withCredentials: false,
-                }
+                values
             )
             console.log(response.data.message)
 

@@ -22,10 +22,7 @@ export default function LoginPage() {
         try {
             const response = await http_common.post(
                 '/user/login',
-                values,
-                {
-                    withCredentials: false,
-                }
+                values
             )
             console.log(response.data)
 
