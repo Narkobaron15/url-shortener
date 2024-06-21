@@ -1,0 +1,31 @@
+.wrapper {
+    @apply max-w-md mx-auto mt-10;
+}
+
+.wrapper h2 {
+    @apply text-2xl font-semibold text-center mb-4;
+}
+
+.form {
+    @apply bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4;
+}
+
+.form label {
+    @apply block text-gray-700 text-sm font-bold mb-2;
+}
+
+.form input {
+    @apply shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline;
+}
+
+.icon {
+    @apply absolute right-3 top-2.5 text-gray-500;
+}
+
+.error {
+    @apply text-red-500 text-xs italic;
+}
+
+button.submit-btn {
+    @apply bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline;
+}
