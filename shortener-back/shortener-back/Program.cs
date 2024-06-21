@@ -44,11 +44,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.UseCors(opts =>
-    opts.AllowAnyHeader()
-        .AllowAnyMethod()
-        .AllowAnyOrigin()
-);
+app.ConfigureCors(builder);
 
 await app.SeedDatabase();
 
