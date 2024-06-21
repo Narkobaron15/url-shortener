@@ -1,9 +1,9 @@
 nav ul li {
-    @apply md:my-2
+    @apply md:my-2;
 }
 
 nav img {
-    @apply my-2 md:my-0
+    @apply my-2 md:my-0;
 }
 
 h1.styled {
