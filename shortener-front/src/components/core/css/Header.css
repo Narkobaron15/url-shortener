@@ -1,0 +1,11 @@
+nav ul li {
+    @apply md:my-2
+}
+
+nav img {
+    @apply my-2 md:my-0
+}
+
+h1.styled {
+    @apply inline self-center whitespace-nowrap text-xl font-semibold dark:text-white;
+}
