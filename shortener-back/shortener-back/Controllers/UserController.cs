@@ -1,11 +1,36 @@
 ﻿namespace shortener_back.Controllers;
 
-[ApiController, Route("user")]
+[ApiController, Route("[controller]")]
 public class UserController(
     IUserService userService,
-    IShortenService shortenService
+    IShortenService shortenService,
+    IWebHostEnvironment env,
+    IConfiguration configuration
 ) : ControllerBase
 {
+    private readonly CookieOptions _options = new()
+    {
+        HttpOnly = true,
+        SameSite = SameSiteMode.None,
+        Secure = true,
+        MaxAge = TimeSpan.FromMinutes(
+            Convert.ToInt32(env.IsDevelopment()
+                ? configuration["JwtExpireMinutes"]
+                : Environment.GetEnvironmentVariable("JwtExpireMinutes")
+            )
+        ),
+    };
+
+    private IActionResult ProcessTokens(TokensDto? tokens)
+    {
+        if (tokens is null)
+            return BadRequest();
+
+        Response.Cookies.Append("jwt", tokens.AccessToken, _options);
+        Response.Cookies.Append("refresh", tokens.RefreshToken, _options);
+        return Ok(tokens);
+    }
+
     [HttpGet("info"), Authorize]
     public async Task<IActionResult> GetAccountInfo()
     {
@@ -54,7 +79,7 @@ public class UserController(
             dto.Username,
             dto.Password
         );
-        return tokens is null ? BadRequest() : Ok(tokens);
+        return ProcessTokens(tokens);
     }
 
     [HttpPost("register"), AllowAnonymous]
@@ -67,11 +92,14 @@ public class UserController(
         );
         return Ok(result);
     }
-    
+
     [HttpPost("refresh"), Authorize]
     public async Task<IActionResult> Refresh([FromBody] TokensDto dto)
     {
-        TokensDto? tokens = await userService.Refresh(dto.AccessToken, dto.RefreshToken);
-        return tokens is null ? BadRequest() : Ok(tokens);
+        TokensDto? tokens = await userService.Refresh(
+            dto.AccessToken,
+            dto.RefreshToken
+        );
+        return ProcessTokens(tokens);
     }
 }

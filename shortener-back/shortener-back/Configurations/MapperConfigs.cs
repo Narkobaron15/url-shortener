@@ -2,6 +2,7 @@
 
 public class MapperConfigs : /*AutoMapper*/ Profile
 {
+    
     public MapperConfigs()
     {
         CreateMap<Shorten, ShortenDto>();

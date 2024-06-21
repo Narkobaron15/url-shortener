@@ -107,6 +107,11 @@ public static class ServiceExtensions
                         context.Response.Headers["IS-TOKEN-EXPIRED"] = "true";
                     }
                     return Task.CompletedTask;
+                },
+                OnMessageReceived = context =>
+                {
+                    context.Token = context.Request.Cookies["jwt"];
+                    return Task.CompletedTask;
                 }
             };
         });
