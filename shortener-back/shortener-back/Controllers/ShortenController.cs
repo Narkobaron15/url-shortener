@@ -16,4 +16,7 @@ public class ShortenController(IShortenService urlService) : ControllerBase
         string url = await urlService.GetUrl(code);
         return RedirectPermanent(url);
     }
+
+    [HttpGet("/")]
+    public async Task<IActionResult> Index() => await Get(null);
 }

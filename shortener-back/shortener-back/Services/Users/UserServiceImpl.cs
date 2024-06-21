@@ -4,7 +4,8 @@ public class UserServiceImpl(
     UserManager<User> userManager,
     IMapper mapper,
     IJwtTokenService jwtTokenService,
-    ITokensRepository tokenRepository
+    ITokensRepository tokenRepository,
+    ShortenerDbContext dbContext
 ) : IUserService
 {
     public async Task<TokensDto?> Authenticate(string username, string password)
@@ -26,22 +27,22 @@ public class UserServiceImpl(
             .GetPrincipalFromExpiredToken(accessToken);
         string username = principal.Identity?.Name ?? String.Empty;
         User? user = await userManager.FindByNameAsync(username);
-        if (user is null) 
+        if (user is null)
             throw new UnauthorizedAccessException("Invalid username");
 
         UserRefreshTokens? savedRefreshToken = tokenRepository
             .GetSavedRefreshTokens(username, refreshToken);
-        if (savedRefreshToken is null) 
+        if (savedRefreshToken is null)
             throw new UnauthorizedAccessException("Invalid refresh token");
 
         return await jwtTokenService.GenerateToken(user);
     }
 
     public async Task<UserDto> Register(
-        string username, 
-        string email, 
+        string username,
+        string email,
         string password
-        )
+    )
     {
         User user = new()
         {
@@ -49,7 +50,7 @@ public class UserServiceImpl(
             Email = email
         };
         IdentityResult result = await userManager.CreateAsync(user, password);
-        if (!result.Succeeded) 
+        if (!result.Succeeded)
             throw new InvalidOperationException("User creation failed");
 
         await userManager.AddToRoleAsync(user, "User");
@@ -61,7 +62,12 @@ public class UserServiceImpl(
         if (user is null) return null;
 
         User? userEntity = await userManager.GetUserAsync(user);
-        return userEntity is null ? null : mapper.Map<UserDto>(userEntity);
+        return userEntity is null 
+            ? null 
+            : mapper.Map<UserDto>(userEntity) with
+            {
+                Shortens = await GetRoutes(userEntity)
+            };
     }
 
     public async Task<IEnumerable<ShortenDto>?> GetRoutes(ClaimsPrincipal? user)
@@ -71,6 +77,13 @@ public class UserServiceImpl(
         User? userEntity = await userManager.GetUserAsync(user);
         return userEntity is null
             ? null
-            : mapper.Map<IEnumerable<ShortenDto>>(userEntity.Shortens);
+            : await GetRoutes(userEntity);
     }
+
+    private async Task<IList<ShortenDto>> GetRoutes(User user)
+        => mapper.Map<IList<ShortenDto>>(
+            await dbContext.Shortens
+                .Where(x => x.UserId == user.Id)
+                .ToListAsync()
+        );
 }

@@ -5,4 +5,7 @@ public record UserDto(
     string Email,
     DateTime CreatedAt,
     ICollection<ShortenDto> Shortens
-);
+)
+{
+    public UserDto() : this(String.Empty, String.Empty, DateTime.UtcNow, []) {}
+}
