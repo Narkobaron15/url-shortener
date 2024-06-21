@@ -1,36 +1,36 @@
 import './css/LoginRegisterPage.css'
-import http_common from "../../common/http_common.ts";
-import RegisterModel from "../../models/RegisterModel.ts";
-import {ErrorMessage, Field, Form, Formik, FormikHelpers} from "formik";
-import {HiOutlineLockClosed, HiOutlineUser, HiOutlineMail} from "react-icons/hi";
-import {registerValidationSchema} from "./schemas/Schemas.ts";
-import {useNavigate} from "react-router-dom";
+import http_common from "../../common/http_common.ts"
+import RegisterModel from "../../models/RegisterModel.ts"
+import {ErrorMessage, Field, Form, Formik, FormikHelpers} from "formik"
+import {HiOutlineLockClosed, HiOutlineUser, HiOutlineMail} from "react-icons/hi"
+import {registerValidationSchema} from "./schemas/Schemas.ts"
+import {useNavigate} from "react-router-dom"
 
 const initialValues = {
     username: '',
     email: '',
     password: '',
-};
+}
 
 export default function RegisterPage() {
-    const navigate = useNavigate();
+    const navigate = useNavigate()
 
     const handleSubmit = async (
         values: RegisterModel,
         { setSubmitting } : FormikHelpers<RegisterModel>
     ) => {
         try {
-            const response = await http_common.post('/user/register', values);
-            console.log(response.data.message);
+            let response = await http_common.post('/user/register', values)
+            console.log(response.data.message)
+            response = await http_common.post('/user/login', values)
+            console.log(response.data.message)
+            navigate('/')
         } catch (error) {
-            console.error('Error registering', error);
+            console.error('Error registering', error)
         } finally {
-            setSubmitting(false);
-            const response = await http_common.post('/user/login', values);
-            console.log(response.data);
-            navigate('/');
+            setSubmitting(false)
         }
-    };
+    }
     
     return (
         <div className="wrapper">
@@ -95,5 +95,5 @@ export default function RegisterPage() {
                 )}
             </Formik>
         </div>
-    );
+    )
 }

@@ -1,9 +1,9 @@
-import * as Yup from "yup";
+import * as Yup from "yup"
 
 const loginValidationSchema = Yup.object({
     email: Yup.string().email('Invalid email address').required('Required'),
     password: Yup.string().required('Required'),
-});
+})
 
 
 const registerValidationSchema = Yup.object({
@@ -17,6 +17,6 @@ const registerValidationSchema = Yup.object({
             one uppercase letter, one digit, and one non-alphanumeric character`
         )
         .required('Password is required')
-});
+})
 
 export { loginValidationSchema, registerValidationSchema }

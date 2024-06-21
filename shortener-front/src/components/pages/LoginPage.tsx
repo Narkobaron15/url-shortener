@@ -1,32 +1,32 @@
 import './css/LoginRegisterPage.css'
-import http_common from "../../common/http_common.ts";
-import {ErrorMessage, Field, Form, Formik, FormikHelpers } from "formik";
-import {loginValidationSchema} from "./schemas/Schemas.ts";
-import {HiOutlineMail, HiOutlineLockClosed} from "react-icons/hi";
-import LoginModel from "../../models/LoginModel.ts";
-import {useNavigate} from "react-router-dom";
+import http_common from "../../common/http_common.ts"
+import {ErrorMessage, Field, Form, Formik, FormikHelpers } from "formik"
+import {loginValidationSchema} from "./schemas/Schemas.ts"
+import {HiOutlineMail, HiOutlineLockClosed} from "react-icons/hi"
+import LoginModel from "../../models/LoginModel.ts"
+import {useNavigate} from "react-router-dom"
 
 const initialValues = {
     email: '',
     password: '',
-};
+}
 export default function LoginPage() {
-    const navigate = useNavigate();
+    const navigate = useNavigate()
 
     const handleSubmit = async (
         values: LoginModel,
         { setSubmitting }: FormikHelpers<LoginModel>
     ) => {
         try {
-            const response = await http_common.post('/user/login', values);
-            console.log(response.data.message);
+            const response = await http_common.post('/user/login', values)
+            console.log(response.data.message)
+            navigate('/')
         } catch (error) {
-            console.error('Error logging in', error);
+            console.error('Error logging in', error)
         } finally {
-            setSubmitting(false);
-            navigate('/');
+            setSubmitting(false)
         }
-    };
+    }
 
     return (
         <div className="wrapper">
@@ -77,5 +77,5 @@ export default function LoginPage() {
                 )}
             </Formik>
         </div>
-    );
+    )
 }
