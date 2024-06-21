@@ -17,6 +17,7 @@ builder.Services.AddAutoMapper(typeof(MapperConfigs));
 builder.Services.AddRepositories();
 
 builder.Services.AddIdentity();
+builder.Services.AddAuth(builder.Configuration);
 
 builder.Services.AddBusinessLogic();
 
@@ -38,6 +39,7 @@ app.UseHsts();
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

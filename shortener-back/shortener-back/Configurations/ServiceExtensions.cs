@@ -13,6 +13,7 @@ public static class ServiceExtensions
         services.AddScoped<IShortenService, ShortenServiceImpl>();
         services.AddScoped<ITokensRepository, TokensRepositoryImpl>();
         services.AddScoped<IUserService, UserServiceImpl>();
+        services.AddScoped<IJwtTokenService, JwtTokenServiceImpl>();
 
         return services;
     }
@@ -38,7 +39,78 @@ public static class ServiceExtensions
             )
             .AddEntityFrameworkStores<ShortenerDbContext>()
             .AddDefaultTokenProviders();
+        
         return services;
     }
 
+    public static IServiceCollection AddAuth(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
+    {
+        // swagger ui configs
+        services.AddSwaggerGen(c => {
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "You api title", Version = "v1" });
+            c.AddSecurityDefinition("Bearer",
+                new OpenApiSecurityScheme 
+                { 
+                    In = ParameterLocation.Header,
+                    Description = "Please enter into field the word 'Bearer' following by space and JWT", 
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey
+                });
+    
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Name = "Bearer",
+                        In = ParameterLocation.Header,
+                        Reference = new OpenApiReference
+                        {
+                            Id = "Bearer",
+                            Type = ReferenceType.SecurityScheme
+                        }
+                    },
+                    new List<string>()
+                }
+            });
+        });
+        
+        // auth configs
+        byte[] keyBytes = Encoding.UTF8.GetBytes(configuration["JwtSecretKey"]!);
+        SymmetricSecurityKey signingKey = new(keyBytes);
+        
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        }).AddJwtBearer(cfg =>
+        {
+            cfg.RequireHttpsMetadata = false;
+            cfg.SaveToken = true;
+            cfg.TokenValidationParameters = new TokenValidationParameters
+            {
+                IssuerSigningKey = signingKey,
+                ValidateAudience = false, // on production make true
+                ValidateIssuer = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = configuration["JwtIssuer"],
+                ClockSkew = TimeSpan.Zero
+            };
+            cfg.Events = new JwtBearerEvents {
+                OnAuthenticationFailed = context => {
+                    if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+                    {
+                        context.Response.Headers["IS-TOKEN-EXPIRED"] = "true";
+                    }
+                    return Task.CompletedTask;
+                }
+            };
+        });
+
+        return services;
+    }
 }
