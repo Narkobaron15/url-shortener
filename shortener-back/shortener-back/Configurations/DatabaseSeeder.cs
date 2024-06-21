@@ -4,7 +4,8 @@ public static class DatabaseSeeder
 {
     public static async Task SeedDatabase(this IApplicationBuilder app)
     {
-        using IServiceScope scope = app.ApplicationServices.CreateScope();
+        await using AsyncServiceScope scope 
+            = app.ApplicationServices.CreateAsyncScope();
         IServiceProvider services = scope.ServiceProvider;
         
         IWebHostEnvironment env = services
