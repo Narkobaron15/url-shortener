@@ -10,10 +10,10 @@ export default function AccountPage() {
     const navigate = useNavigate()
     const [account, setAccount] = useState<AccountModel | null>(null)
 
-    if (!localStorage.getItem('auth'))
-        navigate('/login')
-
     useEffect(() => {
+        if (!localStorage.getItem('auth'))
+            navigate('/login')
+
         http_common.get('/user/info')
             .then(response => {
                 setAccount(response.data)
@@ -22,7 +22,7 @@ export default function AccountPage() {
                 console.error('Error getting account info', error)
                 navigate('/login')
             })
-    }, [])
+    }, [navigate])
 
     const deleteShorten = (shortenId: string) => {
         http_common.delete(`/user/route/${shortenId}`)
@@ -57,12 +57,11 @@ export default function AccountPage() {
                     <Table.Body className="divide-y">
                         {account.shortens.map((shorten, index) => (
                             <Table.Row key={index}>
-                                <Table.Cell className="link">
-                                    <a href={`${APP_ENV.BASE_URL}/${shorten.code}`}
+                                <Table.Cell>
+                                    <a className="link" href={`${APP_ENV.BASE_URL}/${shorten.code}`}
                                        target="_blank" rel="noopener noreferrer">
                                         {shorten.code}
                                     </a>
-
                                 </Table.Cell>
                                 <Table.Cell>
                                     {shorten.url}

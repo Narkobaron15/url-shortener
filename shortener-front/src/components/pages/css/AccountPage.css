@@ -10,7 +10,7 @@ td {
     @apply whitespace-nowrap font-medium text-gray-900 dark:text-white
 }
 
-td.link {
+a.link {
     @apply text-blue-500 hover:underline;
 }
 
