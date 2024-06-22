@@ -24,6 +24,13 @@ builder.Services.AddBusinessLogic();
 builder.Services.AddExceptionHandler<ExceptionHandler>();
 builder.Services.AddProblemDetails();
 
+// if (!builder.Environment.IsDevelopment())
+    builder.WebHost.ConfigureKestrel(s =>
+    {
+        s.Listen(IPAddress.Any, 80);
+        s.Listen(IPAddress.Any, 443, listenOptions => listenOptions.UseHttps());
+    });
+
 WebApplication app = builder.Build();
 
 app.UseExceptionHandler();
