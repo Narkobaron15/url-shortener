@@ -24,6 +24,17 @@ export default function AccountPage() {
             })
     }, [])
 
+    const deleteShorten = (shortenId: string) => {
+        http_common.delete(`/user/route/${shortenId}`)
+            .then(response => {
+                console.log('Shorten deleted', response)
+                window.location.reload()
+            })
+            .catch(error => {
+                console.error('Error deleting shorten', error)
+            })
+    }
+
     return account
         ? (
             <div className="p-4">
@@ -60,7 +71,9 @@ export default function AccountPage() {
                                 <Table.Cell>{shorten.clicks}</Table.Cell>
                                 <Table.Cell>
                                     {/*<button className="btn btn-sm btn-primary">Edit</button>*/}
-                                    <button className="delete-btn">Delete</button>
+                                    <button className="delete-btn" onClick={
+                                        () => deleteShorten(shorten.code)
+                                    }>Delete</button>
                                 </Table.Cell>
                             </Table.Row>
                         ))}
