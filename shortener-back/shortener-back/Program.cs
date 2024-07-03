@@ -45,6 +45,7 @@ string? origin = builder.Environment.IsDevelopment()
 if (origin is null)
     throw new ApplicationException("MainPage is not set");
 
+app.Logger.LogCritical(origin);
 app.UseCors(opts =>
     opts.WithOrigins(origin)
         .AllowAnyHeader()
